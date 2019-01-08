@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div id="test"></div>
+<script type="text/javascript" src="js/react.development.js"></script>
+<script type="text/javascript" src="js/react-dom.development.js"></script>
+<script type="text/javascript" src="js/babel.min.js"></script>
+<script type="text/babel">
+    class Like extends React.Component {
+        state = {
+            isLikeMe: true
+        };
+        likeClick = () => {
+            const isLikeMe = !this.state.isLikeMe;
+            this.setState({isLikeMe})
+        };
+
+        render() {
+            const like = this.state.isLikeMe;
+            const text = like ? 'I LOVE YOU' : 'YOU LOVE ME';
+            return <h2 onClick={this.likeClick}>{text}</h2>
+        }
+    }
+
+    ReactDOM.render(<Like/>, document.getElementById('test'))
+</script>
+</body>
+</html>

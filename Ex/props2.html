@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div id="test1"></div>
+<hr>
+<div id="test2"></div>
+<script type="text/javascript" src="js/react.development.js"></script>
+<script type="text/javascript" src="js/react-dom.development.js"></script>
+<script type="text/javascript" src="js/prop-types.js"></script>
+<script type="text/javascript" src="js/babel.min.js"></script>
+<script type="text/babel">
+  class Person extends React.Component{
+      static propTypes={
+          name:PropTypes.string.isRequired,
+          sex:PropTypes.string,
+          age:PropTypes.number
+      };
+      static defaultProps={
+          sex:'Boy',
+          age:21
+      }
+      render(){
+          const {name,sex,age}=this.props;
+          return <ul>
+            <li>name:{name}</li>
+            <li>sex:{sex}</li>
+            <li>age:{age}</li>
+          </ul>
+      }
+  }
+  const p1={
+      name:'JimGreen'
+  };
+  const p2={
+      name:'Hanmeimei',
+      sex:'Gril',
+      age:18
+  };
+  ReactDOM.render(<Person name={p1.name}/>,document.getElementById('test1'));
+  ReactDOM.render(<Person name={p2.name} sex={p2.sex} age={p2.age}/>,document.getElementById('test2'))
+</script>
+</body>
+</html>

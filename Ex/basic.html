@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="test1"></div>
+<div id="test2"></div>
+
+<script type="text/javascript" src="js/react.development.js"></script>
+<script type="text/javascript" src="js/react-dom.development.js"></script>
+<script type="text/javascript" src="js/babel.min.js"></script>
+<script type="text/babel">
+// 工厂函数模式
+    function Component() {
+        return <h2>工厂函数模式</h2>;
+    }
+
+    //ES6 类组件模式
+    class Test extends React.Component{
+        render(){
+            return(
+                <div>
+                    <h1>ES6</h1>
+                    <h2>类组件</h2>
+                    <input type="text"/>
+                </div>
+            )
+        }
+    }
+    ReactDOM.render(<Component />,document.getElementById('test1'));
+    ReactDOM.render(<Test />,document.getElementById('test2'))
+</script>
+</body>
+</html>
