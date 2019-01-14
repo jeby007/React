@@ -30,12 +30,9 @@ class LoginForm extends React.Component {
   checkPassword = (rule, value, callback) => {
     if (!value) {
       callback('密码不能为空')
-    } else if (value.length < 3) {
-      callback('密码至少为3位')
-    } else if (!/^[a-z0-9]+$/.test(value)){
-      callback('密码必须为字母和数字组合')
-    }
-    else {
+    } else if (value.length < 6) {
+      callback('密码至少为6位')
+    } else {
       callback()
     }
   }
