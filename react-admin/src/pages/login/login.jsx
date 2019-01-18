@@ -73,6 +73,12 @@ class LoginForm extends React.Component {
       })
   }
 
+  keypress=(e) => {
+    if (e.keyCode===13){
+      console.log('131313')
+  }
+  }
+
   render() {
     const {getFieldDecorator} = this.props.form
     return (
@@ -104,7 +110,7 @@ class LoginForm extends React.Component {
           }
         </Item>
         <Item>
-          <Button type='primary' className='login-form-button' onClick={this.submitlogin}>登录</Button>
+          <Button type='primary' className='login-form-button' onKeyUp={this.keypress} onClick={this.submitlogin}>登录</Button>
         </Item>
       </Form>
     )

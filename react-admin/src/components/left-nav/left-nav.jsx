@@ -71,7 +71,7 @@ class LeftNav extends React.Component {
       <div className='left-nav'>
         <NavLink to='/home' className='logo'>
           <img src={logo} alt="logo"/>
-          <h1>管理后台</h1>
+          <h1>React后台系统</h1>
         </NavLink>
         <Menu mode='inline' theme='dark' defaultSelectedKeys={[path]}>
           {this.menuNodes}
