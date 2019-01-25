@@ -94,6 +94,7 @@ class Header extends Component {
     return (
       <div className='header'>
         <Row className='header-top'>
+          <span style={{float:'left',color:'red',fontWeight:'bold'}}>React贼啦难!</span>
           <span>欢迎，{user.username}</span>
           <a href="##" onClick={this.outlogin}>退出</a>
         </Row>

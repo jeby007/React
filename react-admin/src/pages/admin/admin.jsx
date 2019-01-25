@@ -39,9 +39,9 @@ export default class Admin extends Component {
               <Route path='/product' component={Product}/>
               <Route path='/user' component={User}/>
               <Route path='/role' component={Role}/>
-              <Route path='/bar' component={Bar}/>
-              <Route path='/line' component={Line}/>
-              <Route path='/pie' component={Pie}/>
+              <Route path='/charts/bar' component={Bar}/>
+              <Route path='/charts/line' component={Line}/>
+              <Route path='/charts/pie' component={Pie}/>
               <Redirect to='/home'/>
             </Switch>
           </div>

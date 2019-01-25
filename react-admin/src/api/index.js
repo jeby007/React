@@ -39,3 +39,44 @@ export const reqAddCategory=(parentId,categoryName)=>ajax('/manage/category/add'
 export const reqUpdateCategory=(categoryId,categoryName)=>ajax('/manage/category/update',{
   categoryId,categoryName
 },'POST')
+
+//添加或更新商品
+export const reqAddUpdateProduct = (product) => ajax('/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST')
+
+//删除图片
+export const reqDeleteImg = (name) => ajax('/manage/img/delete', {name}, 'POST')
+
+//搜索商品分页列表
+export const reqSearchProducts = ({pageNum, pageSize, searchType, searchName}) => ajax('/manage/product/search', {
+  pageNum,
+  pageSize,
+  [searchType]: searchName
+})
+
+//根据分类ID获取分类
+export const reqCategory = (categoryId) => ajax('/manage/category/info', {categoryId})
+
+
+//获取指定的商品分类列表
+export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize})
+
+//更新商品的上下架状态
+export const reqUpdateStatus=(productId,status)=>ajax('/manage/product/updateStatus',{productId,status},'POST')
+
+//添加角色
+export const reqAddRole=(roleName)=>ajax('/manage/role/add',{roleName},'POST')
+
+//获取角色列表
+export const reqRoles=()=>ajax('/manage/role/list')
+
+//更新角色
+export const reqUpdateRoles=(role)=>ajax('/manage/role/update',role,'POST')
+
+// 添加/更新用户
+export const reqAddOrUpdateUser = (user) => ajax('/manage/user/'+(user._id ? 'update' : 'add'), user, 'POST')
+
+// 获取用户列表
+export const reqUsers = () => ajax('/manage/user/list')
+
+// 删除用户
+export const reqDeleteUser = (userId) => ajax('/manage/user/delete', {userId}, 'POST')

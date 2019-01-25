@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Button, Table, Icon, Modal, Card, Form, Input, Select, message} from "antd";
 import {reqCategorys, reqAddCategory, reqUpdateCategory} from "../../api";
 import PropTypes from 'prop-types'
+
 const Item = Form.Item
 const Option = Select.Option
 
@@ -11,18 +12,27 @@ const Option = Select.Option
  */
 export default class Category extends Component {
   state = {
-    categorys: [],
-    isShowAdd: false
+    categorys: [],  //一级分类列表
+    subCategorys: [],   //二级分类列表
+    isShowAdd: false,  //添加对话框
+    isShowUpdate: false,  //修改分类名称对话框
+    parentId: '0',
+    parentName: ''
   }
 
   //获取一级分类
-  getCategorys = async () => {
-    const result = await reqCategorys('0')
+  getCategorys = async (Id) => {
+    const parentId = Id || this.state.parentId
+    const result = await reqCategorys(parentId)
     if (result.status === 0) {
       const categorys = result.data
-      this.setState({
-        categorys
-      })
+      if (parentId === '0') {
+        this.setState({
+          categorys
+        })
+      } else {
+        this.setState({subCategorys: categorys})
+      }
     }
   }
 
@@ -33,14 +43,57 @@ export default class Category extends Component {
     })
     const {parentId, categoryName} = this.form.getFieldsValue()
     const result = await reqAddCategory(parentId, categoryName)
+    this.form.resetFields()
     if (result.status === 0) {
       message.success('添加成功')
-      this.getCategorys()
+      if (parentId === this.state.parentId || parentId === '0') {
+        this.getCategorys(parentId)
+      }
     }
   }
 
 
-  componentDidMount () {
+  //显示更新分类界面
+  showUpdate = (category) => {
+    this.category = category
+    this.setState({
+      isShowUpdate: true
+    })
+  }
+  //更新分类名称
+  updateCategory = async () => {
+    this.setState({
+      isShowUpdate: false
+    })
+    const categoryId = this.category._id
+    const {categoryName} = this.form.getFieldsValue()
+    this.form.resetFields()
+    const result = await reqUpdateCategory(categoryId, categoryName)
+    if (result.status === 0) {
+      message.success('修改分类成功')
+      this.getCategorys()
+    }
+  }
+  //显示二级分类
+  showSubCategorys = (category) => {
+    this.setState({
+      parentId: category._id,
+      parentName: category.name
+    }, () => {
+      this.getCategorys()
+    })
+  }
+
+  //显示一级分类
+  showCategory = () => {
+    this.setState({
+      parentId: '0',
+      parentName: '',
+      subCategory: []
+    })
+  }
+
+  componentDidMount() {
     this.getCategorys()
   }
 
@@ -54,20 +107,33 @@ export default class Category extends Component {
       render: (category) => {
         return (
           <span>
-            <a href="##" style={{marginRight: 5}}>修改分类</a>
-            <a href="##">查看子分类</a>
+            <a href="##" style={{marginRight: 15}} onClick={() => {
+              this.showUpdate(category)
+            }}>修改分类</a>
+            <a href="##" onClick={() => this.showSubCategorys(category)}>查看子分类</a>
           </span>
         )
       }
     }]
   }
+
   render() {
     const columns = this.columns
-    const {categorys, isShowAdd} = this.state
+    const {categorys, isShowAdd, isShowUpdate, parentId, subCategorys, parentName} = this.state
+    const category = this.category || {}
     return (
       <div>
         <Card>
-          <span style={{fontSize: 20}}>一级分类列表</span>
+          {
+            parentId === '0' ? <span style={{fontSize: 20}}>一级分类列表</span> : (
+              <span>
+                <a href='##' onClick={() => this.showCategory()}>一级分类</a>
+                <Icon type="swap-right"/>
+                <span>{parentName}</span>
+              </span>
+            )
+          }
+
           <Button type='primary'
                   style={{float: 'right'}}
                   onClick={() => this.setState({isShowAdd: true})}>
@@ -80,8 +146,8 @@ export default class Category extends Component {
           bordered
           rowKey='_id'
           columns={columns}
-          dataSource={categorys}
-          loading={!categorys || categorys.length===0}
+          dataSource={parentId === '0' ? categorys : subCategorys}
+          //loading={!categorys || categorys.length===0}
           pagination={{defaultPageSize: 10, showSizeChanger: true, showQuickJumper: true}}
         />
 
@@ -93,34 +159,48 @@ export default class Category extends Component {
           okText='确定'
           cancelText='取消'
         >
-          <AddForm categorys={categorys} setForm={(form) => this.form = form}/>
+          <AddForm categorys={categorys} parentId={parentId} setForm={(form) => this.form = form}/>
+        </Modal>
+        <Modal
+          title='更新分类'
+          visible={isShowUpdate}
+          onOk={this.updateCategory}
+          onCancel={() => this.setState({isShowUpdate: false})}
+          okText='确定'
+          cancelText='取消'
+        >
+          <UpdateForm categoryName={category.name} setForm={(form) => this.form = form}/>
         </Modal>
       </div>
     )
   }
 }
 
+
+//添加分类的Form组件
 class AddForm extends Component {
 
   static propTypes = {
     categorys: PropTypes.array.isRequired,
     setForm: PropTypes.func.isRequired,
+    parentId: PropTypes.string.isRequired,
   }
 
-  componentWillMount () {
+
+  componentWillMount() {
     this.props.setForm(this.props.form)
   }
 
-  render () {
+  render() {
 
     const {getFieldDecorator} = this.props.form
-    const {categorys} = this.props
+    const {categorys,parentId} = this.props
     return (
       <Form>
         <Item label='所属分类'>
           {
             getFieldDecorator('parentId', {
-              initialValue: '0'
+              initialValue: parentId
             })(
               <Select>
                 <Option key='0' value='0'>一级分类</Option>
@@ -147,3 +227,38 @@ class AddForm extends Component {
 }
 
 AddForm = Form.create()(AddForm)
+
+//更新分类的Form组件
+class UpdateForm extends Component {
+
+  static propTypes = {
+    categoryName: PropTypes.string,
+    setForm: PropTypes.func.isRequired,
+  }
+
+  componentWillMount() {
+    this.props.setForm(this.props.form)
+  }
+
+  render() {
+
+    const {getFieldDecorator} = this.props.form
+    const {categoryName} = this.props
+    return (
+      <Form>
+        <Item>
+          {
+            getFieldDecorator('categoryName', {
+              initialValue: categoryName
+            })(
+              <Input/>
+            )
+          }
+        </Item>
+      </Form>
+    )
+  }
+}
+
+UpdateForm = Form.create()(UpdateForm)
+
