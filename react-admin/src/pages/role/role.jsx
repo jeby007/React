@@ -4,6 +4,8 @@ import {Card, Button, Table, Form, Input, Modal, message, Tree} from "antd";
 import {reqRoles, reqAddRole, reqUpdateRoles} from "../../api";
 import {formateDate} from "../../utils/utils";
 import menuList from "../../config/menuConfig";
+import MemoryUtils from '../../utils/MemoryUtils'
+import storageUtils from '../../utils/storageUtils'
 
 const FormItem = Form.Item
 const {TreeNode} = Tree
@@ -93,12 +95,16 @@ export default class Role extends Component {
     role.menus = menus
     const result = await reqUpdateRoles(role)
     if (result.status === 0) {
-      message.success('授权成功')
-      this.getRoles()
-    } else {
-      message.error('授权失败')
+      if (MemoryUtils.user.role_id === role._id) {
+        storageUtils.removeUser()
+        MemoryUtils.user = {}
+        this.props.history.replace('/login')
+        message.info('当前用户的权限已更新，请重新登录')
+      } else {
+        message.success('授权成功')
+        this.getRoles()
+      }
     }
-
   }
 
   //更新角色的menus
